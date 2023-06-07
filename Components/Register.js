@@ -5,7 +5,7 @@ import { styles } from '../assets/styles/styles.js';
 import axios from 'axios';
 import { useState } from 'react';
 
-export default function Register() {
+export default function Register({navigation}) {
     const [isError, setIsError] = useState(false)
     const [message, setMessage] = useState('')
     const [idSearch, setIdsearch] = useState('')

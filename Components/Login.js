@@ -4,8 +4,9 @@ import { useForm, Controller } from 'react-hook-form';
 import { styles } from '../assets/styles/styles.js';
 import axios from 'axios';
 import { useState } from 'react';
+import Register from './Register.js';
 
-export default function Login() {
+export default function Login({navigation}) {
     const [isError, setIsError] = useState(false)
     const [message, setMessage] = useState('')
     const [idSearch, setIdsearch] = useState('')
@@ -13,7 +14,7 @@ export default function Login() {
   // configuración del formulario
   const { control, handleSubmit, formState: { errors }, reset, setValue } = useForm({
     defaultValues: {
-      user: '',
+      username: '',
       password: ''
     }
   });
@@ -22,21 +23,21 @@ export default function Login() {
     const response = await axios.get(`http://127.0.0.1:3000/api/clientes/${idSearch}`)
     //console.log(response.data)
     if(!response.data.error){
-      setValue("firstName", response.data.nombre)
-      setValue("lastName", response.data.apellidos)
-      setMessage('')
       setIsError(false)
+      setMessage('')
     }else{
-      setValue("firstName", "Error")
-      setValue("lastName", "Error")
       setIsError(true)
       setMessage('El id del cliente NO Existe')
     }
   }
 
+  const register = () =>{
+    navigation.navigate(Register)
+  }
+
   return (
     <View style={styles.container}>
-      <Text>Inicio de Sesion</Text>
+      <Text style={{fontSize:20, marginBottom:20}}>Inicio de Sesion</Text>
       <Controller
         control={control}
         rules={{
@@ -46,13 +47,13 @@ export default function Login() {
           <TextInput
             label="Usuario"
             mode="outlined"
-            style={{ backgroundColor: 'powderblue' }}
+            style={{  }}
             onBlur={onBlur}
             onChangeText={onChange}
             value={value}
           />
         )}
-        name="user"
+        name="username"
       />
       {errors.user && <Text style={{ color: 'red' }}>El usuario es obligatorio</Text>}
 
@@ -79,11 +80,19 @@ export default function Login() {
 
       <View style={{marginTop:20, flexDirection:'row'}}>
         <Button 
-          style={{backgroundColor:'blue',marginLeft:10}}
+          style={{backgroundColor:'blue'}}
           icon="login" 
           mode="contained" 
           onPress={handleSubmit(onSearch)}>
           Iniciar Sesion
+        </Button>
+      </View>
+      <View style={{marginTop:20, flexDirection:'row'}}>
+        <Button 
+          style={{borderColor:'white'}}
+          mode="outlined" 
+          onPress={register}>
+          Registrarse
         </Button>
       </View>
     </View>
