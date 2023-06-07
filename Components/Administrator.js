@@ -5,7 +5,7 @@ import { styles } from '../assets/styles/styles.js';
 import axios from 'axios';
 import { useState } from 'react';
 
-export default function Register({navigation}) {
+export default function Administrator({navigation}) {
     const [isError, setIsError] = useState(false)
     const [message, setMessage] = useState('')
     const [idSearch, setIdsearch] = useState('')
@@ -80,7 +80,7 @@ export default function Register({navigation}) {
 
   return (
     <View style={styles.container}>
-      <Text style={{fontSize:20, marginBottom:20}}>Registrarse</Text>
+      <Text style={{fontSize:20, marginBottom:20}}>Agregar auto</Text>
       <TextInput 
         style={{marginTop:5, marginBottom:5}}
         placeholder='' 

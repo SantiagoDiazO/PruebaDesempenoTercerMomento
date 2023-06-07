@@ -5,6 +5,9 @@ import { styles } from '../assets/styles/styles.js';
 import axios from 'axios';
 import { useState } from 'react';
 import Register from './Register.js';
+import CustomerTabs from './CustomerTabs.js';
+import ForgotPassword from './ForgotPassword.js';
+import Administrator from './Administrator.js';
 
 export default function Login({navigation}) {
     const [isError, setIsError] = useState(false)
@@ -31,8 +34,22 @@ export default function Login({navigation}) {
     }
   }
 
+  let rol = "admin"
+
+  const login = () =>{
+    if(rol == "admin"){
+      navigation.navigate(Administrator)
+    }else{
+      navigation.navigate(CustomerTabs)
+    }
+  }
+
   const register = () =>{
     navigation.navigate(Register)
+  }
+  
+  const forgotPassword = () =>{
+    navigation.navigate(ForgotPassword)
   }
 
   return (
@@ -83,16 +100,24 @@ export default function Login({navigation}) {
           style={{backgroundColor:'blue'}}
           icon="login" 
           mode="contained" 
-          onPress={handleSubmit(onSearch)}>
+          onPress={login}>
           Iniciar Sesion
         </Button>
       </View>
-      <View style={{marginTop:20, flexDirection:'row'}}>
+      <View style={{marginTop:10, flexDirection:'row'}}>
         <Button 
           style={{borderColor:'white'}}
           mode="outlined" 
           onPress={register}>
           Registrarse
+        </Button>
+      </View>
+      <View style={{marginTop:1, flexDirection:'row'}}>
+        <Button 
+          style={{borderColor:'white'}}
+          mode="outlined" 
+          onPress={forgotPassword}>
+          ¿Olvidaste la contraseña?
         </Button>
       </View>
     </View>
