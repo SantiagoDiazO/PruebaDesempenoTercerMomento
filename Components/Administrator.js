@@ -1,94 +1,120 @@
-import { Text, View } from 'react-native';
-import { TextInput, Button } from 'react-native-paper'
-import { useForm, Controller } from 'react-hook-form';
-import { styles } from '../assets/styles/styles.js';
-import axios from 'axios';
-import { useState } from 'react';
+import { Text, View } from "react-native";
+import { TextInput, Button } from "react-native-paper";
+import { useForm, Controller } from "react-hook-form";
+import { styles } from "../assets/styles/styles.js";
+import axios from "axios";
+import { useState } from "react";
 
-export default function Administrator({navigation}) {
-    const [isError, setIsError] = useState(false)
-    const [message, setMessage] = useState('')
-    const [idSearch, setIdsearch] = useState('')
+export default function Administrator({ navigation }) {
+  const [isError, setIsError] = useState(false);
+  const [message, setMessage] = useState("");
+  const [idSearch, setIdsearch] = useState("");
 
   // configuración del formulario
-  const { control, handleSubmit, formState: { errors }, reset, setValue } = useForm({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    reset,
+    setValue,
+  } = useForm({
     defaultValues: {
-      firstName: '',
-      lastName: ''
-    }
+      placa: "",
+      marca: "",
+      valorDia: "",
+    },
   });
 
-  const onSave = async(data) => {
-    let nombre = data.firstName
-    let apellidos = data.lastName
-    const response = await axios.post('http://127.0.0.1:3000/api/clientes', {
-        nombre,
-        apellidos
-    });
-    setIsError(false)
-    setMessage("Cliente agregado correctamente...")
-    setTimeout(() => {
-        setMessage("")
-    }, 2000)
-    reset()
+  const onSave = async (data) => {
+    let platenumber = data.placa;
+    let brand = data.marca;
+    let dailyvalue = data.valorDia;
 
-    //console.log(data)
+    const car = {
+      platenumber,
+      brand,
+      dailyvalue,
+    };
+    const response = await axios.post(`http://127.0.0.1:3500/api/cars`, car);
+    console.log(response.data);
+    setIsError(false);
+    setMessage("Carro agregado correctamente...");
+    setTimeout(() => {
+      setMessage("");
+    }, 2000);
+    reset();
   };
 
-  const onSearch = async() =>{
-    const response = await axios.get(`http://127.0.0.1:3000/api/clientes/${idSearch}`)
-    //console.log(response.data)
-    if(!response.data.error){
-      setValue("firstName", response.data.nombre)
-      setValue("lastName", response.data.apellidos)
-      setMessage('')
-      setIsError(false)
-    }else{
-      setValue("firstName", "Error")
-      setValue("lastName", "Error")
-      setIsError(true)
-      setMessage('El id del cliente NO Existe')
-    }
-  }
+  const onUpdate = async (data) => {
+    let platenumber = data.placa;
+    let brand = data.marca;
+    let dailyvalue = data.valorDia;
 
-  const onUpdate = async(data) => {
-    const response = await axios.put(`http://127.0.0.1:3000/api/clientes/${idSearch}`,
-    {
-      nombre: data.firstName,
-      apellidos: data.lastName
-    })
-    setIsError(false)
-    setMessage("Cliente actualizado con exito")
-    setTimeout(()=>{
-      setMessage("")
-      setValue("firstName", "")
-      setValue("lastName", "")
-    }, 5000)
-  }
+    const car = {
+      brand,
+      dailyvalue,
+    };
+    const response = await axios.put(
+      `http://127.0.0.1:3500/api/cars/${platenumber}`,
+      car
+    );
+    setIsError(false);
+    setMessage("Carro actualizado correctamente...");
+    setTimeout(() => {
+      setMessage("");
+    }, 2000);
+    reset();
+  };
 
-  const onDelete = async(data) => {
-    if(confirm(`Esta seguro de eliminar el clienet ${data.firstName} ${data.lastName}`)){
-      const response = await axios.delete(`http://127.0.0.1:3000/api/clientes/${idSearch}`)
-      setIsError(false)
-      setMessage("Cliente eliminado correctamente")
-      setTimeout(()=>{
-        setMessage("")
-        reset()
-      }, 2000)
+  const onSearch = async () => {
+    const response = await axios.get(
+      `http://127.0.0.1:3500/api/cars/${idSearch}`
+    );
+    if (!response.data.error) {
+      setValue("placa", response.data.platenumber);
+      setValue("marca", response.data.brand);
+      setValue("valorDia", response.data.dailyvalue);
+      setIsError(false);
+      setTimeout(() => {
+        setMessage("");
+      }, 2000);
+    } else {
+      setValue("placa", "Error");
+      setValue("marca", "Error");
+      setValue("valorDia", "Error");
+      setMessage(response.data.error);
     }
-  }
+  };
+
+  const onDelete = async () => {
+    const response = await axios.delete(
+      `http://127.0.0.1:3500/api/cars/${idSearch}`
+    );
+    if (!response.data.error) {
+      setMessage("Auto eliminado correctamente");
+      setIsError(false);
+      setTimeout(() => {
+        setMessage("");
+      }, 2000);
+      reset();
+    } else {
+      setMessage(response.data.error);
+    }
+  };
 
   return (
     <View style={styles.container}>
-      <Text style={{fontSize:20, marginBottom:20}}>Agregar auto</Text>
-      <TextInput 
-        style={{marginTop:5, marginBottom:5}}
-        placeholder='' 
-        label="Id del cliente a buscar" 
-        mode="outlined" 
-        value={idSearch} 
-        onChangeText={idSearch => setIdsearch(idSearch)}
+      <Text style={{ fontSize: 20, marginBottom: 20 }}>Agregar auto</Text>
+
+      <TextInput
+        style={{ marginTop: 5, marginBottom: 5 }}
+        placeholder=""
+        label="Placa del auto a buscar"
+        mode="outlined"
+        value={idSearch}
+        onChangeText={(idSearch) => setIdsearch(idSearch)}
       />
+
       <Controller
         control={control}
         rules={{
@@ -96,17 +122,19 @@ export default function Administrator({navigation}) {
         }}
         render={({ field: { onChange, onBlur, value } }) => (
           <TextInput
-            label="Nombre Completo"
+            label="Placa"
             mode="outlined"
-            style={{ backgroundColor: 'powderblue' }}
+            style={{}}
             onBlur={onBlur}
             onChangeText={onChange}
             value={value}
           />
         )}
-        name="firstName"
+        name="placa"
       />
-      {errors.firstName && <Text style={{ color: 'red' }}>El nombre es obligatorio</Text>}
+      {errors.placa && (
+        <Text style={{ color: "red" }}>La placa es obligatoria</Text>
+      )}
 
       <Controller
         control={control}
@@ -115,7 +143,7 @@ export default function Administrator({navigation}) {
         }}
         render={({ field: { onChange, onBlur, value } }) => (
           <TextInput
-            label="Apellidos"
+            label="Marca"
             mode="outlined"
             style={{ marginTop: 10 }}
             onBlur={onBlur}
@@ -123,39 +151,66 @@ export default function Administrator({navigation}) {
             value={value}
           />
         )}
-        name="lastName"
+        name="marca"
       />
-        {errors.lastName && <Text style={{ color: 'red' }}>El apellido es obligatorio</Text>}
+      {errors.marca && (
+        <Text style={{ color: "red" }}>La marca es obligatoria</Text>
+      )}
 
-        <Text style={{color: isError ? 'red' : 'verde'}}>{message}</Text>
+      <Controller
+        control={control}
+        rules={{
+          required: true,
+        }}
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            label="Costo por dia"
+            mode="outlined"
+            style={{ marginTop: 10 }}
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+          />
+        )}
+        name="valorDia"
+      />
+      {errors.valorDia && (
+        <Text style={{ color: "red" }}>El valor por dia es obligatorio</Text>
+      )}
 
-      <View style={{marginTop:20, flexDirection:'row'}}>
-        <Button 
-          icon="content-save" 
-          mode="contained" 
-          onPress={handleSubmit(onSave)}>
+      <Text style={{ color: isError ? "red" : "verde" }}>{message}</Text>
+
+      <View style={{ marginTop: 20, flexDirection: "row" }}>
+        <Button
+          icon="content-save"
+          mode="contained"
+          onPress={handleSubmit(onSave)}
+        >
           Guardar
         </Button>
-        <Button 
-          style={{backgroundColor:'orange',marginLeft:10}}
-          icon="card-search-outline" 
-          mode="contained" 
-          onPress={onSearch}>
+        <Button
+          style={{ backgroundColor: "orange", marginLeft: 10 }}
+          icon="card-search-outline"
+          mode="contained"
+          onPress={onSearch}
+        >
           Buscar
         </Button>
       </View>
-      <View style={{marginTop:20, flexDirection:'row'}}>
-        <Button 
-          icon="pencil-outline" 
-          mode="contained" 
-          onPress={handleSubmit(onUpdate)}>
+      <View style={{ marginTop: 20, flexDirection: "row" }}>
+        <Button
+          icon="pencil-outline"
+          mode="contained"
+          onPress={handleSubmit(onUpdate)}
+        >
           Actualizar
         </Button>
-        <Button 
-          style={{backgroundColor:'red',marginLeft:10}}
-          icon="delete-outline" 
-          mode="contained" 
-          onPress={handleSubmit(onDelete)}>
+        <Button
+          style={{ backgroundColor: "red", marginLeft: 10 }}
+          icon="delete-outline"
+          mode="contained"
+          onPress={handleSubmit(onDelete)}
+        >
           Eliminar
         </Button>
       </View>

@@ -1,5 +1,5 @@
 import { Text, View } from 'react-native';
-import { TextInput, Button } from 'react-native-paper'
+import { TextInput, Button } from 'react-native-paper';
 import { useForm, Controller } from 'react-hook-form';
 import { styles } from '../assets/styles/styles.js';
 import axios from 'axios';
@@ -98,7 +98,7 @@ export default function ForgotPassword({navigation}) {
           <TextInput
             label="Nombre Completo"
             mode="outlined"
-            style={{ backgroundColor: 'powderblue' }}
+            style={{}}
             onBlur={onBlur}
             onChangeText={onChange}
             value={value}
@@ -131,32 +131,10 @@ export default function ForgotPassword({navigation}) {
 
       <View style={{marginTop:20, flexDirection:'row'}}>
         <Button 
-          icon="content-save" 
-          mode="contained" 
-          onPress={handleSubmit(onSave)}>
-          Guardar
-        </Button>
-        <Button 
-          style={{backgroundColor:'orange',marginLeft:10}}
-          icon="card-search-outline" 
-          mode="contained" 
-          onPress={onSearch}>
-          Buscar
-        </Button>
-      </View>
-      <View style={{marginTop:20, flexDirection:'row'}}>
-        <Button 
           icon="pencil-outline" 
           mode="contained" 
           onPress={handleSubmit(onUpdate)}>
           Actualizar
-        </Button>
-        <Button 
-          style={{backgroundColor:'red',marginLeft:10}}
-          icon="delete-outline" 
-          mode="contained" 
-          onPress={handleSubmit(onDelete)}>
-          Eliminar
         </Button>
       </View>
     </View>

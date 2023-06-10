@@ -1,5 +1,5 @@
 import { Text, View } from 'react-native';
-import { TextInput, Button } from 'react-native-paper'
+import { TextInput, Button } from 'react-native-paper';
 import { useForm, Controller } from 'react-hook-form';
 import { styles } from '../assets/styles/styles.js';
 import axios from 'axios';
@@ -13,82 +13,40 @@ export default function Register({navigation}) {
   // configuración del formulario
   const { control, handleSubmit, formState: { errors }, reset, setValue } = useForm({
     defaultValues: {
-      firstName: '',
-      lastName: ''
+      username: '',
+      name: '',
+      role: '',
+      reservword: '',
+      password: ''
     }
   });
 
-  const onSave = async(data) => {
-    let nombre = data.firstName
-    let apellidos = data.lastName
-    const response = await axios.post('http://127.0.0.1:3000/api/clientes', {
-        nombre,
-        apellidos
-    });
+  const register = async(data) =>{
+    let username = data.username
+    let name = data.name
+    let role = data.role
+    let reservword = data.reservword
+    let password = data.password
+
+    const user = {
+      username,
+      name,
+      role,
+      reservword,
+      password
+    }
+    const response = await axios.post(`http://127.0.0.1:3500/api/users`, user)
     setIsError(false)
     setMessage("Cliente agregado correctamente...")
     setTimeout(() => {
         setMessage("")
     }, 2000)
     reset()
-
-    //console.log(data)
-  };
-
-  const onSearch = async() =>{
-    const response = await axios.get(`http://127.0.0.1:3000/api/clientes/${idSearch}`)
-    //console.log(response.data)
-    if(!response.data.error){
-      setValue("firstName", response.data.nombre)
-      setValue("lastName", response.data.apellidos)
-      setMessage('')
-      setIsError(false)
-    }else{
-      setValue("firstName", "Error")
-      setValue("lastName", "Error")
-      setIsError(true)
-      setMessage('El id del cliente NO Existe')
-    }
-  }
-
-  const onUpdate = async(data) => {
-    const response = await axios.put(`http://127.0.0.1:3000/api/clientes/${idSearch}`,
-    {
-      nombre: data.firstName,
-      apellidos: data.lastName
-    })
-    setIsError(false)
-    setMessage("Cliente actualizado con exito")
-    setTimeout(()=>{
-      setMessage("")
-      setValue("firstName", "")
-      setValue("lastName", "")
-    }, 5000)
-  }
-
-  const onDelete = async(data) => {
-    if(confirm(`Esta seguro de eliminar el clienet ${data.firstName} ${data.lastName}`)){
-      const response = await axios.delete(`http://127.0.0.1:3000/api/clientes/${idSearch}`)
-      setIsError(false)
-      setMessage("Cliente eliminado correctamente")
-      setTimeout(()=>{
-        setMessage("")
-        reset()
-      }, 2000)
-    }
   }
 
   return (
     <View style={styles.container}>
       <Text style={{fontSize:20, marginBottom:20}}>Registrarse</Text>
-      <TextInput 
-        style={{marginTop:5, marginBottom:5}}
-        placeholder='' 
-        label="Id del cliente a buscar" 
-        mode="outlined" 
-        value={idSearch} 
-        onChangeText={idSearch => setIdsearch(idSearch)}
-      />
       <Controller
         control={control}
         rules={{
@@ -96,17 +54,17 @@ export default function Register({navigation}) {
         }}
         render={({ field: { onChange, onBlur, value } }) => (
           <TextInput
-            label="Nombre Completo"
+            label="Usuario"
             mode="outlined"
-            style={{ backgroundColor: 'powderblue' }}
+            style={{}}
             onBlur={onBlur}
             onChangeText={onChange}
             value={value}
           />
         )}
-        name="firstName"
+        name="username"
       />
-      {errors.firstName && <Text style={{ color: 'red' }}>El nombre es obligatorio</Text>}
+      {errors.username && <Text style={{ color: 'red' }}>El usuario es obligatorio</Text>}
 
       <Controller
         control={control}
@@ -115,7 +73,26 @@ export default function Register({navigation}) {
         }}
         render={({ field: { onChange, onBlur, value } }) => (
           <TextInput
-            label="Apellidos"
+            label="Nombre"
+            mode="outlined"
+            style={{marginTop: 10}}
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+          />
+        )}
+        name="name"
+      />
+      {errors.name && <Text style={{ color: 'red' }}>El nombre es obligatorio</Text>}
+
+      <Controller
+        control={control}
+        rules={{
+          required: true,
+        }}
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            label="Rol"
             mode="outlined"
             style={{ marginTop: 10 }}
             onBlur={onBlur}
@@ -123,9 +100,47 @@ export default function Register({navigation}) {
             value={value}
           />
         )}
-        name="lastName"
+        name="role"
       />
-        {errors.lastName && <Text style={{ color: 'red' }}>El apellido es obligatorio</Text>}
+        {errors.role && <Text style={{ color: 'red' }}>El rol es obligatorio</Text>}
+      
+        <Controller
+        control={control}
+        rules={{
+          required: true,
+        }}
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            label="Palabra Reservada"
+            mode="outlined"
+            style={{ marginTop: 10 }}
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+          />
+        )}
+        name="reservword"
+      />
+        {errors.reservword && <Text style={{ color: 'red' }}>La palabra reservada es obligatoria</Text>}
+
+        <Controller
+        control={control}
+        rules={{
+          required: true,
+        }}
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            label="Contrasena"
+            mode="outlined"
+            style={{ marginTop: 10 }}
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+          />
+        )}
+        name="password"
+      />
+        {errors.password && <Text style={{ color: 'red' }}>La contrasena es obligatoria</Text>}
 
         <Text style={{color: isError ? 'red' : 'verde'}}>{message}</Text>
 
@@ -133,30 +148,8 @@ export default function Register({navigation}) {
         <Button 
           icon="content-save" 
           mode="contained" 
-          onPress={handleSubmit(onSave)}>
-          Guardar
-        </Button>
-        <Button 
-          style={{backgroundColor:'orange',marginLeft:10}}
-          icon="card-search-outline" 
-          mode="contained" 
-          onPress={onSearch}>
-          Buscar
-        </Button>
-      </View>
-      <View style={{marginTop:20, flexDirection:'row'}}>
-        <Button 
-          icon="pencil-outline" 
-          mode="contained" 
-          onPress={handleSubmit(onUpdate)}>
-          Actualizar
-        </Button>
-        <Button 
-          style={{backgroundColor:'red',marginLeft:10}}
-          icon="delete-outline" 
-          mode="contained" 
-          onPress={handleSubmit(onDelete)}>
-          Eliminar
+          onPress={handleSubmit(register)}>
+          Registrarse
         </Button>
       </View>
     </View>

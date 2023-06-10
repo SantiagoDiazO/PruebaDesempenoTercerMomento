@@ -7,6 +7,13 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       justifyContent: 'center',
     },
+    dropdown: {
+      padding: 12,
+      color: '#333',
+      fontSize: 16,
+      width: 226,
+      borderRadius: 4,
+    },
 })
 
 export {styles}

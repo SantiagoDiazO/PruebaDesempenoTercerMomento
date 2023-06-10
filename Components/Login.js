@@ -1,5 +1,5 @@
 import { Text, View } from 'react-native';
-import { TextInput, Button } from 'react-native-paper'
+import { TextInput, Button } from 'react-native-paper';
 import { useForm, Controller } from 'react-hook-form';
 import { styles } from '../assets/styles/styles.js';
 import axios from 'axios';
@@ -7,7 +7,7 @@ import { useState } from 'react';
 import Register from './Register.js';
 import CustomerTabs from './CustomerTabs.js';
 import ForgotPassword from './ForgotPassword.js';
-import Administrator from './Administrator.js';
+import Rent from './Rent.js';
 
 export default function Login({navigation}) {
     const [isError, setIsError] = useState(false)
@@ -22,25 +22,33 @@ export default function Login({navigation}) {
     }
   });
 
-  const onSearch = async() =>{
-    const response = await axios.get(`http://127.0.0.1:3000/api/clientes/${idSearch}`)
-    //console.log(response.data)
-    if(!response.data.error){
-      setIsError(false)
-      setMessage('')
-    }else{
-      setIsError(true)
-      setMessage('El id del cliente NO Existe')
-    }
-  }
-
   let rol = "admin"
 
-  const login = () =>{
-    if(rol == "admin"){
-      navigation.navigate(Administrator)
+  const login = async(data) =>{
+    let username = data.username
+    let password = data.password
+    const user = {
+      username,
+      password
+    }
+    const response = await axios.post(`http://127.0.0.1:3500/api/login`, user)
+    if(!response.data.error){
+      if(response.data.role == "admin"){
+        setMessage('')
+        setIsError(false)
+        reset()
+        navigation.navigate(CustomerTabs)
+      }else{
+        setMessage('')
+        setIsError(false)
+        reset()
+        navigation.navigate("Rent", username)
+      }
     }else{
-      navigation.navigate(CustomerTabs)
+      setValue("firstName", "Error")
+      setValue("lastName", "Error")
+      setIsError(true)
+      setMessage('El id del cliente NO Existe')
     }
   }
 
@@ -64,7 +72,7 @@ export default function Login({navigation}) {
           <TextInput
             label="Usuario"
             mode="outlined"
-            style={{  }}
+            style={{}}
             onBlur={onBlur}
             onChangeText={onChange}
             value={value}
@@ -72,7 +80,7 @@ export default function Login({navigation}) {
         )}
         name="username"
       />
-      {errors.user && <Text style={{ color: 'red' }}>El usuario es obligatorio</Text>}
+      {errors.username && <Text style={{ color: 'red' }}>El usuario es obligatorio</Text>}
 
       <Controller
         control={control}
@@ -100,7 +108,7 @@ export default function Login({navigation}) {
           style={{backgroundColor:'blue'}}
           icon="login" 
           mode="contained" 
-          onPress={login}>
+          onPress={handleSubmit(login)}>
           Iniciar Sesion
         </Button>
       </View>
