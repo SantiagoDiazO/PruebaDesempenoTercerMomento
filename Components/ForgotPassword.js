@@ -13,100 +13,37 @@ export default function ForgotPassword({navigation}) {
   // configuración del formulario
   const { control, handleSubmit, formState: { errors }, reset, setValue } = useForm({
     defaultValues: {
-      firstName: '',
-      lastName: ''
+      username: '',
+      reservword: '',
+      newpassword: ''
     }
   });
 
-  const onSave = async(data) => {
-    let nombre = data.firstName
-    let apellidos = data.lastName
-    const response = await axios.post('http://127.0.0.1:3000/api/clientes', {
-        nombre,
-        apellidos
-    });
-    setIsError(false)
-    setMessage("Cliente agregado correctamente...")
-    setTimeout(() => {
-        setMessage("")
-    }, 2000)
-    reset()
-
-    //console.log(data)
-  };
-
-  const onSearch = async() =>{
-    const response = await axios.get(`http://127.0.0.1:3000/api/clientes/${idSearch}`)
-    //console.log(response.data)
-    if(!response.data.error){
-      setValue("firstName", response.data.nombre)
-      setValue("lastName", response.data.apellidos)
-      setMessage('')
-      setIsError(false)
-    }else{
-      setValue("firstName", "Error")
-      setValue("lastName", "Error")
-      setIsError(true)
-      setMessage('El id del cliente NO Existe')
-    }
-  }
-
   const onUpdate = async(data) => {
-    const response = await axios.put(`http://127.0.0.1:3000/api/clientes/${idSearch}`,
-    {
-      nombre: data.firstName,
-      apellidos: data.lastName
-    })
-    setIsError(false)
-    setMessage("Cliente actualizado con exito")
-    setTimeout(()=>{
-      setMessage("")
-      setValue("firstName", "")
-      setValue("lastName", "")
-    }, 5000)
-  }
+    let username = data.username;
+    let reservword = data.reservword;
+    let newpassword = data.newpassword;
 
-  const onDelete = async(data) => {
-    if(confirm(`Esta seguro de eliminar el clienet ${data.firstName} ${data.lastName}`)){
-      const response = await axios.delete(`http://127.0.0.1:3000/api/clientes/${idSearch}`)
-      setIsError(false)
-      setMessage("Cliente eliminado correctamente")
-      setTimeout(()=>{
-        setMessage("")
-        reset()
-      }, 2000)
-    }
-  }
+    const user = {
+      reservword,
+      newpassword
+    };
+    const response = await axios.put(
+      `http://127.0.0.1:3500/api/forgot/${username}`,
+      user
+    );
+    console.log(response, "", user)
+    setIsError(false);  
+    setMessage("Contraseña actualizadas correctamente...");
+    setTimeout(() => {
+      setMessage("");
+    }, 6000);
+    reset();
+  };
 
   return (
     <View style={styles.container}>
       <Text style={{fontSize:20, marginBottom:20}}>Recuperar contraseña</Text>
-      <TextInput 
-        style={{marginTop:5, marginBottom:5}}
-        placeholder='' 
-        label="Id del cliente a buscar" 
-        mode="outlined" 
-        value={idSearch} 
-        onChangeText={idSearch => setIdsearch(idSearch)}
-      />
-      <Controller
-        control={control}
-        rules={{
-          required: true,
-        }}
-        render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
-            label="Nombre Completo"
-            mode="outlined"
-            style={{}}
-            onBlur={onBlur}
-            onChangeText={onChange}
-            value={value}
-          />
-        )}
-        name="firstName"
-      />
-      {errors.firstName && <Text style={{ color: 'red' }}>El nombre es obligatorio</Text>}
 
       <Controller
         control={control}
@@ -115,7 +52,7 @@ export default function ForgotPassword({navigation}) {
         }}
         render={({ field: { onChange, onBlur, value } }) => (
           <TextInput
-            label="Apellidos"
+            label="Usuario"
             mode="outlined"
             style={{ marginTop: 10 }}
             onBlur={onBlur}
@@ -123,9 +60,47 @@ export default function ForgotPassword({navigation}) {
             value={value}
           />
         )}
-        name="lastName"
+        name="username"
       />
-        {errors.lastName && <Text style={{ color: 'red' }}>El apellido es obligatorio</Text>}
+        {errors.username && <Text style={{ color: 'red' }}>El usuario es obligatorio</Text>}
+
+      <Controller
+        control={control}
+        rules={{
+          required: true,
+        }}
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            label="Palabra reservada"
+            mode="outlined"
+            style={{ marginTop: 10 }}
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+          />
+        )}
+        name="reservword"
+      />
+      {errors.reservword && <Text style={{ color: 'red' }}>La palabra reservada es obligatoria</Text>}
+
+      <Controller
+        control={control}
+        rules={{
+          required: true,
+        }}
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            label="Nueva contraseña"
+            mode="outlined"
+            style={{ marginTop: 10 }}
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+          />
+        )}
+        name="newpassword"
+      />
+        {errors.newpassword && <Text style={{ color: 'red' }}>La constraseña nueva es obligatoria</Text>}
 
         <Text style={{color: isError ? 'red' : 'verde'}}>{message}</Text>
 
@@ -134,7 +109,7 @@ export default function ForgotPassword({navigation}) {
           icon="pencil-outline" 
           mode="contained" 
           onPress={handleSubmit(onUpdate)}>
-          Actualizar
+          Cambiar contraseña
         </Button>
       </View>
     </View>

@@ -91,13 +91,20 @@ export default function Rent({ navigation, route }) {
             `http://127.0.0.1:3500/api/rents`,
             car
           );
-          console.log(response.data);
-          setIsError(false);
-          setMessage("Renta agregada correctamente...");
-          setTimeout(() => {
-            setMessage("");
-          }, 3500);
-          reset();
+          if(!response.data.error){
+            setIsError(false);
+            setMessage("Renta agregada correctamente...");
+            setTimeout(() => {
+              setMessage("");
+            }, 3500);
+            reset();
+          }else{
+            setIsError(true);
+            setMessage(response.data.error);
+            setTimeout(() => {
+              setMessage("");
+            }, 3500);
+          }
         } else {
           setIsError(true);
           setMessage("La fecha final es menor a la fecha inicial");
@@ -157,7 +164,7 @@ export default function Rent({ navigation, route }) {
             onChangeText={onChange}
             value={value}
             keyboardType="numeric"
-            placeholder="dd/mm/yyyy"
+            placeholder="yyyy/mm/dd"
             maxLength={10}
           />
         )}
@@ -180,6 +187,9 @@ export default function Rent({ navigation, route }) {
             onBlur={onBlur}
             onChangeText={onChange}
             value={value}
+            keyboardType="numeric"
+            placeholder="yyyy/mm/dd"
+            maxLength={10}
           />
         )}
         name="fechaFinal"

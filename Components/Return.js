@@ -100,6 +100,9 @@ export default function Return() {
             onBlur={onBlur}
             onChangeText={onChange}
             value={value}
+            keyboardType="numeric"
+            placeholder="yyyy/mm/dd"
+            maxLength={10}
           />
         )}
         name="fechaDevolucion"
